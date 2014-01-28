@@ -8,9 +8,15 @@ binDir = bin
 
 debug = 1
 
+RPIadress = 10.0.0.1
+#RPIadress = 192.168.1.10
+RPIuser = pi
+RPIdir = /home/pi/projects/
+CXX = C:/Libraries/Cygwin/opt/cross/x-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++
+
 CFlags = -DGLES2 -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -DHAVE_LIBOPENMAX=2 -DOMX -DOMX_SKIP64BIT -ftree-vectorize -pipe -DUSE_EXTERNAL_OMX -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ_ARM -Wall -Wno-psabi
 LDFlags = -rdynamic -Wl,-rpath=extern/lib
-libs = GLESv2 EGL openmaxil bcm_host ilclient png freetype z pthread rt dl
+libs = GLESv2 EGL openmaxil bcm_host ilclient png freetype z pthread rt dl curl
 libDir = extern/lib
 inc = extern/include extern/include/interface/vcos/pthreads src/OpenUtility
 
@@ -65,6 +71,26 @@ distclean: clean
 buildrepo:
 	@$(call make-repo)
 
+copysource:
+	@echo "Synching sources with Raspberry Pi..."
+	@rsync --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r -e ssh -avz --delete-after ./$(srcDir) $(RPIuser)@$(RPIadress):$(RPIdir)
+
+install:
+	@$(call sync)
+
+run:
+	@$(call sync)
+	ssh -t $(RPIuser)@$(RPIadress) $(RPIdir)/bin/borne.bin -sd
+
+rundebug:	
+    C:/Libraries/Cygwin/opt/cross/x-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gdb
+
+sshkey: ~/.ssh/id_dsa.pub
+	ssh-copy-id -i ~/.ssh/id_dsa.pub $(RPIuser)@$(RPIadress)
+
+~/.ssh/id_dsa.pub:
+	ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ''
+
 define make-repo
    for dir in $(srcDirs); \
    do \
@@ -75,6 +101,13 @@ endef
 ifneq "$(MAKECMDGOALS)" "clean"
 -include $(objects:.o=.d)
 endif
+
+# usage: $(call sync)
+define sync
+	@echo "Synching files with Raspberry Pi..."
+	@rsync --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r -e ssh -avz --delete-after ./$(binDir) ./content ./shader $(RPIuser)@$(RPIadress):$(RPIdir)
+	@ssh $(RPIuser)@$(RPIadress) 'chmod 755 $(RPIdir)/$(binDir)/$(app)'
+endef
 
 # usage: $(call make-depend,source-file,object-file,depend-file)
 define make-depend

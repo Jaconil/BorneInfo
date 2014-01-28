@@ -241,7 +241,7 @@
     <conf name="Default" type="0">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>raspberry_pi_arm|Cygwin</compilerSet>
+        <compilerSet>RASPBERRY|Cygwin</compilerSet>
         <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
