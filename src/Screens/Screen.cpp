@@ -78,7 +78,7 @@ void CScreenBox::Init()
 
 	Font=new OpenUtility::CFontLoader("../content/verdana.ttf",50);
 	Title=new OpenUtility::C3DText(Font,0.0,0.28,0.46,1.0,0.5);
-	Title->SetAlignement(OpenUtility::CFontLoader::IFontEngine::EHAlignLeft,OpenUtility::CFontLoader::IFontEngine::EVAlignBaseligne);
+	Title->SetAlignement(OpenUtility::CFontLoader::IFontEngine::EHAlignCenter,OpenUtility::CFontLoader::IFontEngine::EVAlignBaseligne);
 	Title->UpdateText(Screen->GetName());
 
 	ForceRender=true;
@@ -213,10 +213,12 @@ bool CScreenBox::PreRender()
 		MVPmatrix*=OpenUtility::CMat4x4<float>().SetRotate(RotY[1],0,1,0);
 
 		MVPmatrixLogo=MVPmatrix;
-		MVPmatrixLogo*=OpenUtility::CMat4x4<float>().SetTranslate(-2,1,0.01);
+		//MVPmatrixLogo*=OpenUtility::CMat4x4<float>().SetTranslate(-2,1,0.01);
+        MVPmatrixLogo*=OpenUtility::CMat4x4<float>().SetTranslate(0,1,0.01);
 
 		MVPmatrixTitle=MVPmatrix;
-		MVPmatrixTitle*=OpenUtility::CMat4x4<float>().SetTranslate(0,1,0.01);
+		//MVPmatrixTitle*=OpenUtility::CMat4x4<float>().SetTranslate(0,1,0.01);
+        MVPmatrixTitle*=OpenUtility::CMat4x4<float>().SetTranslate(0,-1,0.01);
 		Title->SetDefaultShaderMatrix(MVPmatrixTitle);
 
 		return(true);

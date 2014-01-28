@@ -2,7 +2,7 @@
 #include "ScreenEvent.h"
 
 CScreenEvent::CScreenEvent(IRenderingObjectComm *obj,OpenUtility::ITextureQuad *image) :
-	IScreen(obj,"Ev�nements",image)
+	IScreen(obj,"Evenements",image)
 {
 }
 

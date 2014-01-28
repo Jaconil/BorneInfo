@@ -2,7 +2,7 @@
 #include "ScreenMap.h"
 
 CScreenMap::CScreenMap(IRenderingObjectComm *obj,OpenUtility::ITextureQuad *image) :
-	IScreen(obj,"Plans des b�timents",image)
+	IScreen(obj,"Plans des batiments",image)
 {
 }
 
