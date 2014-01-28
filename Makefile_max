@@ -8,18 +8,14 @@ binDir = bin
 
 debug = 1
 
-#RPIadress = 172.19.34.161
-#RPIadress = raspberry4
-#RPIadress = 192.168.0.5
 RPIadress = 10.0.0.1
 RPIuser = pi
 RPIdir = /home/borne/borneMax
-#CXX = arm-linux-gnueabihf-g++
 CXX = C:/cygwin64/opt/cross/x-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++
 
 CFlags = -DGLES2 -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -DHAVE_LIBOPENMAX=2 -DOMX -DOMX_SKIP64BIT -ftree-vectorize -pipe -DUSE_EXTERNAL_OMX -DHAVE_LIBBCM_HOST -DUSE_EXTERNAL_LIBBCM_HOST -DUSE_VCHIQ_ARM -Wall -Wno-psabi
 LDFlags = -rdynamic -Wl,-rpath=extern/lib
-libs = GLESv2 EGL openmaxil bcm_host ilclient png freetype z pthread rt dl
+libs = GLESv2 EGL openmaxil bcm_host ilclient png freetype z pthread rt dl curl
 libDir = extern/lib
 inc = extern/include extern/include/interface/vcos/pthreads src/OpenUtility
 
