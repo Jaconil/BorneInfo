@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "Transport/Structures.h"
 #include "Screen.h"
 #include "Transport/LinesList.h"
 
@@ -33,38 +34,6 @@ protected:
 class CScreenTransport : public IScreen
 {
 public:
-    enum EScreenTransport
-    {
-        ST_HOME = 0,
-        ST_SCHEDULE,
-        ST_STOPS,
-        ST_TRAFFIC,
-        ST_LINEMAP,
-        ST_MAP,
-    };
-
-    struct STransportStatus
-    {
-        EScreenTransport PreviousScreen;
-        EScreenTransport CurrentScreen;
-        std::string CurrentLine;
-        std::string CurrentStop;
-    //	EDirection CurrentDirection;
-    //	CSchedule CurrentSchedule;
-    //	std::map<Traffic> CurrentTraffic;
-        
-        STransportStatus()
-        {
-            PreviousScreen = ST_HOME;
-            CurrentScreen = ST_HOME;
-            CurrentLine = "";
-            CurrentStop = "";
-        }
-    };    
-    
-    
-    
-public:
 	CScreenTransport(IRenderingObjectComm *obj,OpenUtility::ITextureQuad *image=NULL);
 	CScreenTransport(const CScreenTransport &obj);    
 	virtual ~CScreenTransport();
@@ -75,10 +44,15 @@ public:
 	bool PreRender();
 	void Render();
     
+    inline int GetScreenPixelWidth() {return 1920;} // TODO : Remplacer par le contexte OpenGL
+    inline int GetScreenPixelHeight() {return 1080;} // TODO : Remplacer par le contexte OpenGL
+    inline int GetTaskbarHeight() {return 108;} // TODO : Remplacer par la vraie valeur
+    
     inline float GetScreenWidth() {return this->ScreenWidth;}
     inline float GetScreenHeight() {return this->ScreenHeight;}
     inline OpenUtility::CMat4x4<float> GetMVPMatrix() {return this->MVPMatrix;}
     inline STransportStatus* GetStatus() {return &(this->Status);}
+    inline OpenUtility::CFontLoader* GetFont(EFontTransport font) {return this->Fonts[font];}
     
     // Définition des couleurs
     static const OpenUtility::RGBAd WHITE; 
@@ -98,7 +72,7 @@ private:
     CSubScreenTransport* Screens[6];    
     
     // Polices
-    OpenUtility::CFontLoader* FontTitle;
+    OpenUtility::CFontLoader* Fonts[3];
     
     // Fond et bandeau    
     OpenUtility::CQuad* Background;
@@ -126,7 +100,7 @@ private:
     std::string LogoPath;
 	std::string MapButtonPath;
     
-//    std::map<std::string, Line> Lines;
+//    std::map<std::string, CLine> Lines;
 	std::vector<std::string> NearLines;	
 };
 

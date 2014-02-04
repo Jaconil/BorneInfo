@@ -45,8 +45,8 @@ public:
 	void SetText(const char *text,EHAlign hAlign=EHAlignLeft,EVAlign vAlign=EVAlignBaseligne);
 	void UpdateText(const char *text);
 	void SetAlignement(EHAlign hAlign=EHAlignLeft,EVAlign vAlign=EVAlignBaseligne);
-	double GetWidth();
-	double GetHeight();
+	double GetWidth() {return TotalX;};
+	double GetHeight() {return MaxY - MinY;};
 	void AttachAttribToData(GLuint vPos,GLuint vNorm,GLuint vTex);
 	void AttachAttribToData(GLuint vPos,GLuint vTex);
 	void Draw();

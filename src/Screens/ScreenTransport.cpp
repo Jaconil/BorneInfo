@@ -6,7 +6,7 @@
 
 
 const OpenUtility::RGBAd CScreenTransport::WHITE(1.0, 1.0, 1.0, 1.0);
-const OpenUtility::RGBAd CScreenTransport::BLACK(0.0, 0.0, 0.0, 0.0);
+const OpenUtility::RGBAd CScreenTransport::BLACK(0.0, 0.0, 0.0, 1.0);
 const OpenUtility::RGBAd CScreenTransport::DARKGREEN(0.0, 0.26, 0.32, 1.0);
 const OpenUtility::RGBAd CScreenTransport::GREY(0.73, 0.73, 0.73, 1.0);
 
@@ -19,7 +19,9 @@ CScreenTransport::CScreenTransport(IRenderingObjectComm *obj,OpenUtility::ITextu
     this->Logo = NULL;
     this->Title = NULL;
         
-    this->FontTitle = NULL;
+    this->Fonts[FT_TITLE] = NULL;
+    this->Fonts[FT_MENUTITLE] = NULL;
+    this->Fonts[FT_MENU] = NULL;
     
     this->Screens[ST_HOME] = new CTScreenHome(obj, this);
     this->Screens[ST_SCHEDULE] = new CTScreenSchedule(obj, this);
@@ -64,17 +66,19 @@ void CScreenTransport::Init()
     this->ScreenHeight = Frustum.pBottom * ratio * 0.9; // Coefficient pour retirer la hauteur de la taskbar
 
     // Chargement des polices
-    this->FontTitle = new OpenUtility::CFontLoader("../content/Transport/trebucbd.ttf", 80);
+    this->Fonts[FT_TITLE] = new OpenUtility::CFontLoader("../content/Transport/trebucbd.ttf", 80);
+    this->Fonts[FT_MENUTITLE] = new OpenUtility::CFontLoader("../content/Transport/trebucbd.ttf", 30);
+    this->Fonts[FT_MENU] = new OpenUtility::CFontLoader("../content/Transport/trebuc.ttf", 30);
 
     // Fond et bandeau       
-    this->Background = new OpenUtility::CQuad(0, 0, this->ScreenWidth, this->ScreenHeight*1.12, WHITE, WHITE, WHITE, WHITE);
+    this->Background = new OpenUtility::CQuad(0, 0, this->ScreenWidth, this->ScreenHeight*1.12, WHITE);
     this->Background->SetDefaultShaderMatrix(this->MVPMatrix, OpenUtility::CMat4x4<float>());
 
-    this->Header = new OpenUtility::CQuad(0, 0, this->ScreenWidth, this->ScreenHeight*0.12, DARKGREEN, DARKGREEN, DARKGREEN, DARKGREEN);
+    this->Header = new OpenUtility::CQuad(0, 0, this->ScreenWidth, this->ScreenHeight*0.12, DARKGREEN);
     this->Header->SetDefaultShaderMatrix(this->MVPMatrix, OpenUtility::CMat4x4<float>());
 
     // Titre des écrans
-    this->Title = new OpenUtility::C3DText(this->FontTitle, 1.0, 1.0, 1.0, 1.0);
+    this->Title = new OpenUtility::C3DText(this->Fonts[FT_TITLE], 1.0, 1.0, 1.0, 1.0, 1.1);
     this->Title->SetAlignement(OpenUtility::CFontLoader::IFontEngine::EHAlignRight, OpenUtility::CFontLoader::IFontEngine::EVAlignTop);
     this->Title->UpdateText(this->Screens[this->Status.CurrentScreen]->GetTitle().c_str());
 
@@ -106,7 +110,8 @@ void CScreenTransport::UnInit()
     delete this->Header;
     delete this->Logo;
     delete this->Title;
-    delete this->FontTitle;
+    
+    delete[] this->Fonts;
 }
 
 bool CScreenTransport::PreRender()
@@ -131,9 +136,10 @@ bool CScreenTransport::PreRender()
     static bool changed = false;
     static unsigned long long start = pClass->GetTimeUnit();
     unsigned long long now = pClass->GetTimeUnit();
-    if (!changed && (now - start) > 5000) {
+    if (!changed && (now - start) > 10000) {
         changed = true;
         this->Status.PreviousScreen = this->Status.CurrentScreen;
+        this->Status.CurrentLine = "c6";
         this->Status.CurrentScreen = ST_SCHEDULE;
     }
     
