@@ -1,6 +1,6 @@
 //coding: utf-8
 #ifndef _Fetcher_h
-        #define _Fetcher_h
+	#define _Fetcher_h
 
 #include <string>
 #include "curl/curl.h"
@@ -13,7 +13,7 @@ public:
 	virtual ~CFetcher();
 	
 	rapidjson::Document GetJSONContent(std::string);
-	void GetImageContent(std::string);
+	std::string GetImageContent(std::string);
 
 protected:
 	std::string server;

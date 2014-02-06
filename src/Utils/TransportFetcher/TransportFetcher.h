@@ -8,14 +8,19 @@
 #include "Schedule.h"
 #include "Traffic.h"
 
+typedef struct {
+	int top;
+	int left;
+	int width;
+	int height;
+	std::string file;
+} ImageInfo;
+
 class CTransportFetcher : CFetcher
 {
 public:
-	std::string linesUrl;
-	std::string nearUrl;
-	std::string logoUrl;
-	std::string mapButtonUrl;
-	std::string trafficUrl;
+	ImageInfo logoInfo;
+	ImageInfo mapButtonInfo;
 
 	std::vector<CLine> lines;
 	std::map<std::string, std::string> near;
@@ -35,6 +40,12 @@ public:
 	void FetchMapButton();
 
 private: 
+	std::string linesUrl;
+	std::string nearUrl;
+	std::string mapButtonUrl;
+	std::string trafficUrl;
+	std::string logoUrl;
+
 	bool HandleError(rapidjson::Document&);
 };
 

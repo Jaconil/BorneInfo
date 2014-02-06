@@ -17,8 +17,8 @@ CTransportFetcher::CTransportFetcher(std::string srv, std::string prx) : CFetche
 {
 	this->linesUrl = server + "/borne/web/bus/lines";
 	this->nearUrl = server + "/borne/web/bus/near";
-	this->logoUrl = server + "/borne/web/bus/logo";
 	this->mapButtonUrl = server + "/borne/web/bus/mapButton";
+	this->logoUrl = server + "/borne/web/bus/logo";
 }
 
 CTransportFetcher::~CTransportFetcher() { }
@@ -44,9 +44,26 @@ std::vector<CLine> CTransportFetcher::FetchLines()
 			std::string name = jsonLine["name"].GetString();
 			std::string direction1 = jsonLine["sens1"].GetString();
 			std::string direction2 = jsonLine["sens2"].GetString();
+			std::string tileset = "";
+			int top = 0;
+			int left = 0;
+			int width = 0;
+			int height = 0;
 			std::map<std::string, std::string> stops;
 			std::map<std::string, std::vector< std::string> > connected;
-				
+			
+			const rapidjson::Value& rootLogo = jsonLine["logo"];
+
+			if( ! rootLogo.IsNull())
+			{
+				top = rootLogo["top"].GetInt();
+				left = rootLogo["left"].GetInt();
+				width = rootLogo["width"].GetInt();
+				height = rootLogo["height"].GetInt();
+				std::string tilesetUrl = server + rootLogo["tileset"].GetString();
+				tileset = GetImageContent(tilesetUrl);
+			}
+
 			const rapidjson::Value& root = jsonLine["stops"];
 			
 			for (rapidjson::Value::ConstValueIterator itr = root.Begin(); itr != root.End(); ++itr)
@@ -78,21 +95,20 @@ std::vector<CLine> CTransportFetcher::FetchLines()
 				connected.insert(std::pair<std::string, std::vector<std::string> >(connectedLine, connectedStops));
 			}
 
-			std::string map = "";
-			std::string tileset = "";
-			int top = 0;
-			int left = 0;
+			std::string map = "";			
 
 			CLine line( id,
-                                    name,
-                                    direction1,
-                                    direction2,
-                                    map,
-                                    tileset,
-                                    top,
-                                    left,
-                                    stops,
-                                    connected);
+						name,
+						direction1,
+						direction2,
+						map,
+						tileset,
+						top,
+						left,
+						width,
+						height,
+						stops,
+						connected);
 
 			this->lines.push_back(line);
 		}
@@ -103,7 +119,7 @@ std::vector<CLine> CTransportFetcher::FetchLines()
 
 
 std::map<std::string, std::string> CTransportFetcher::FetchNearLines()
-{
+{	
 	rapidjson::Document jsonDocument = CFetcher::GetJSONContent(this->nearUrl);
 
 	if(! HandleError(jsonDocument))
@@ -126,6 +142,7 @@ CSchedule CTransportFetcher::FetchSchedule(std::string lineId, std::string stop,
 
 	std::string url = server + "/borne/web/bus/lines/" + lineId + "/schedule/" + stop + "/";
 	url += (direction == DIRECTION1) ? "1" : "2";
+	std::cout << url << std::endl;
 	rapidjson::Document jsonDocument = CFetcher::GetJSONContent(url);
 
 	if(! HandleError(jsonDocument))
@@ -154,10 +171,10 @@ CSchedule CTransportFetcher::FetchSchedule(std::string lineId, std::string stop,
 std::map<EDirection, std::pair<std::string, std::string> > CTransportFetcher::FetchNext(std::string line, std::string stop)
 {
 	std::string url = server + "/borne/web/bus/lines/" + line + "/next/" + stop;
+	std::cout << "url: " << url << std::endl;
 	rapidjson::Document jsonDocument = CFetcher::GetJSONContent(url);
 
 	bool result = HandleError(jsonDocument);
-	std::cout << result << std::endl;
 
 	if(! result)
 	{
@@ -178,6 +195,7 @@ std::map<EDirection, std::pair<std::string, std::string> > CTransportFetcher::Fe
 std::vector<CTraffic> CTransportFetcher::FetchTraffic(std::string line)
 {
 	std::string trafficUrl = server + "/borne/web/bus/lines/" + line + "/traffic";
+
 	rapidjson::Document jsonDocument = CFetcher::GetJSONContent(trafficUrl);
 
 	if(! HandleError(jsonDocument))
@@ -199,10 +217,20 @@ std::vector<CTraffic> CTransportFetcher::FetchTraffic(std::string line)
 
 void CTransportFetcher::FetchLogo()
 {
-	GetImageContent(this->logoUrl);
+	rapidjson::Document jsonDocument = CFetcher::GetJSONContent(this->logoUrl);
+
+	if(! HandleError(jsonDocument))
+	{
+		this->logoInfo.top = jsonDocument["top"].GetInt();
+		this->logoInfo.left = jsonDocument["left"].GetInt();
+		this->logoInfo.width = jsonDocument["width"].GetInt();
+		this->logoInfo.height = jsonDocument["height"].GetInt();
+		std::string tilesetUrl = server + jsonDocument["tileset"].GetString();
+		this->logoInfo.file = GetImageContent(tilesetUrl);
+	}
 }
 
 void CTransportFetcher::FetchMapButton()
 {
-	GetImageContent(this->mapButtonUrl);
+	this->mapButtonInfo.file = GetImageContent(this->mapButtonUrl);
 }

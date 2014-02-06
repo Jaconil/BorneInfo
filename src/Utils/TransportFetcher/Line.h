@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+
 typedef enum {
 	DIRECTION1,
 	DIRECTION2
@@ -21,10 +22,10 @@ public:
 	std::string direction2;
 	std::string map;
 	std::string tileset;
-	int top, left;
+	int top, left, width, height;
 	
 	std::map<std::string, std::string> stops;
-        std::map<std::string, std::vector< std::string> > connected;
+    std::map<std::string, std::vector< std::string> > connected;
 	
 	CLine(std::string,
         std::string,
@@ -34,12 +35,14 @@ public:
         std::string,
         int,
         int,
+        int,
+        int,
         std::map<std::string, std::string>,
         std::map<std::string, std::vector< std::string> >);
     
 	virtual ~CLine();
     
-        std::string toString();
+    std::string toString();
 };
 
 #endif
