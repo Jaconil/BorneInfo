@@ -13,7 +13,7 @@ CFetcher::CFetcher(std::string srv, std::string prx)
 	proxy = prx;
 	curlHandler = curl_easy_init();
 	curl_easy_setopt(curlHandler, CURLOPT_PROXY, proxy.c_str());
-	resourcesFolder = "content/transport";
+	resourcesFolder = "../content/Transport";
 }
 
 CFetcher::~CFetcher()

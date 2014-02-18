@@ -31,17 +31,18 @@ CScreenTransport::CScreenTransport(IRenderingObjectComm *obj,OpenUtility::ITextu
     this->Screens[ST_MAP] = new CTScreenHome(obj, this);
     
     this->LinesList = new CLinesList(obj, this);
-}
-
-CScreenTransport::CScreenTransport(const CScreenTransport &obj) :
-	IScreen(obj)   
-{
+    
+    this->Fetcher = new CTransportFetcher("172.19.34.53", "");
+        
+    this->Fetcher->FetchLogo();
+    this->Lines = this->Fetcher->FetchLines();
 }
 
 CScreenTransport::~CScreenTransport()
 {
     delete[] this->Screens;
     delete this->LinesList;
+    delete this->Fetcher;
 }
 
 CScreenTransport& CScreenTransport::operator=(const CScreenTransport &obj)
@@ -86,8 +87,15 @@ void CScreenTransport::Init()
     this->MVPmatrixTitle *= OpenUtility::CMat4x4<float>().SetTranslate(this->ScreenWidth*0.99, this->ScreenHeight*0.03, 0);
     this->Title->SetDefaultShaderMatrix(MVPmatrixTitle);
     
+    // Textures
+    this->Textures = std::map<std::string, OpenUtility::CTexture*>();
     
-    Logo = new OpenUtility::CTextureQuad("../content/Transport/logo.png", 3.5, 3.5);
+    // Logo
+    OpenUtility::CTexture* tex = this->GetTexture(this->Fetcher->logoInfo.file);    
+    OpenUtility::CVector<OpenUtility::CTextureMultiQuad::SQuad> quads;    
+    quads.Add(new OpenUtility::CTextureMultiQuad::SQuad(this->Fetcher->logoInfo.left, tex->GetH() - this->Fetcher->logoInfo.top - this->Fetcher->logoInfo.height, this->Fetcher->logoInfo.width, this->Fetcher->logoInfo.height, 3.5));    
+    this->Logo = new OpenUtility::CTextureMultiQuad(tex, quads);
+    
     MVPmatrixLogo = OpenUtility::CMat4x4<float>(this->MVPMatrix);
     MVPmatrixLogo *= OpenUtility::CMat4x4<float>().SetTranslate(this->ScreenWidth*0.07, this->ScreenHeight*0.06, 0);
 
@@ -112,6 +120,10 @@ void CScreenTransport::UnInit()
     delete this->Title;
     
     delete[] this->Fonts;
+    
+    for (std::map<std::string, OpenUtility::CTexture*>::iterator it=this->Textures.begin(); it!=this->Textures.end(); it++) {
+        delete it->second;
+    }
 }
 
 bool CScreenTransport::PreRender()
@@ -133,15 +145,15 @@ bool CScreenTransport::PreRender()
         mustRender = true;
     }
     
-    static bool changed = false;
-    static unsigned long long start = pClass->GetTimeUnit();
-    unsigned long long now = pClass->GetTimeUnit();
-    if (!changed && (now - start) > 10000) {
-        changed = true;
-        this->Status.PreviousScreen = this->Status.CurrentScreen;
-        this->Status.CurrentLine = "c6";
-        this->Status.CurrentScreen = ST_SCHEDULE;
-    }
+//    static bool changed = false;
+//    static unsigned long long start = pClass->GetTimeUnit();
+//    unsigned long long now = pClass->GetTimeUnit();
+//    if (!changed && (now - start) > 30000) {
+//        changed = true;
+//        this->Status.PreviousScreen = this->Status.CurrentScreen;
+//        this->Status.CurrentLine = "c6";
+//        this->Status.CurrentScreen = ST_SCHEDULE;
+//    }
     
     mustRender = mustRender || this->LinesList->PreRender();
     mustRender = mustRender || this->Screens[this->Status.CurrentScreen]->PreRender();
@@ -160,7 +172,7 @@ void CScreenTransport::Render()
 	glUniformMatrix4fv(pClass->GetGlobalShader()["u_MVPmatrix"], 1, GL_FALSE, MVPmatrixLogo.GetMatrix());
     
     Logo->AttachAttribToData(pClass->GetGlobalShader()["vPos"], pClass->GetGlobalShader()["vNorm"], pClass->GetGlobalShader()["vTexCoord"]);
-    Logo->Draw();
+    Logo->Draw(0);
     
     Title->Draw();
     
@@ -168,4 +180,36 @@ void CScreenTransport::Render()
     this->Screens[this->Status.CurrentScreen]->Render();
     
     glEnable(GL_DEPTH_TEST);
+}
+
+OpenUtility::CTexture* CScreenTransport::GetTexture(std::string path)
+{
+    if (this->Textures.count(path) == 0) {
+        this->Textures[path] = OpenUtility::CTexture::LoadTextureFile(path.c_str());
+    }    
+    
+    return this->Textures[path];
+}
+
+void CScreenTransport::OnKeyDown(unsigned int id,int keyCode) 
+{   
+    if (keyCode == 103) {
+        this->LinesList->GetScrollBar()->Scroll(-0.05);
+    } else if (keyCode == 108) {
+        this->LinesList->GetScrollBar()->Scroll(0.05);
+    }
+}
+
+void CScreenTransport::OnKeyUp(unsigned int id,int keyCode) 
+{    
+    if (keyCode == 103) {
+        this->LinesList->GetScrollBar()->StopScroll();
+    } else if (keyCode == 108) {
+        this->LinesList->GetScrollBar()->StopScroll();
+    }
+}
+
+void CScreenTransport::OnMouseMove(unsigned int id,double x,double y) 
+{
+
 }

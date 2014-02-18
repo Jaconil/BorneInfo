@@ -386,6 +386,10 @@ void Client::TransformCoord(double &x,double &y)
 void Client::OnKeyDown(unsigned int id,int keyCode)
 {
 	std::cout << "Press (id #" << id << ") : " << keyCode << std::endl;
+    if (CurDisplayScreen) {
+        CurDisplayScreen->GetScreenClient()->OnKeyDown(id, keyCode);        
+    }
+        
 }
 
 void Client::OnKeyUp(unsigned int id,int keyCode)
@@ -405,6 +409,10 @@ void Client::OnKeyUp(unsigned int id,int keyCode)
 		UpdateSpace=true;
 		break;
 	}
+    
+    if (CurDisplayScreen) {
+        CurDisplayScreen->GetScreenClient()->OnKeyUp(id, keyCode);        
+    }
 }
 
 void Client::OnPeripheralAdd(unsigned int id,const char *name,EPeriphType type)
@@ -485,7 +493,7 @@ void Client::OnMouseMove(unsigned int id,double x,double y)
 		MouseHasMove=true;
 		TabMice[id]->SetRelativePosition(x,y);
 	}
-
+    
 	if (CurTouchScreen)
 	{
 		bool found=false;

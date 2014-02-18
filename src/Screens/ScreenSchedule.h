@@ -15,6 +15,10 @@ public:
 	void UnInit();
 	bool PreRender();
 	void Render();
+    
+    void OnKeyDown(unsigned int id,int keyCode) {};
+	void OnKeyUp(unsigned int id,int keyCode) {};
+	void OnMouseMove(unsigned int id,double x,double y) {};
 };
 
 #endif

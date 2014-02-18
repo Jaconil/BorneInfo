@@ -4,13 +4,14 @@
 
 #include <vector>
 #include <string>
+#include <Utility/3D/CTextureMultiQuad.h>
 #include "../../RenderingObject.h"
 #include "../ScreenTransport.h"
 #include "ScrollBar.h"
 
 class CScreenTransport;
 
-class CLinesList : public IRenderingObject, IScrollable
+class CLinesList : public IRenderingObject, public IScrollable
 {
 public:
     CLinesList(IRenderingObjectComm *obj, CScreenTransport* commonScreen);
@@ -23,7 +24,7 @@ public:
 	bool PreRender();
 	void Render();
     
-    void Update();
+    void Update(bool screenChanged);
     
     float GetBoxWidth() {return this->Width;}
     float GetBoxHeight() {return this->Height;}
@@ -32,12 +33,17 @@ public:
     CScreenTransport* GetScreen() {return this->CommonScreen;}
     
 private:
+    void RenderTitle(std::string text);
+    void RenderLine(int texId, std::string direction1, std::string direction2);
+    
+private:
     CScreenTransport* CommonScreen;
     
     float Width, Height;
     float LeftCrop, TopCrop, RightCrop, BottomCrop;
     
     float ContentHeight;
+    float CurrentHeight;
     
     EScreenTransport CurrentScreen;
     
@@ -45,17 +51,14 @@ private:
     std::vector<std::string> LineConnected;
     std::vector<std::string> OtherLines;
     
-    OpenUtility::CQuad* Background;
-    
-    CScrollBar* ScrollBar;
-    
-    OpenUtility::C3DText* StopConnectedTitle;
-    OpenUtility::C3DText* LineConnectedTitle;
-    OpenUtility::C3DText* NearLinesTitle;
-    OpenUtility::C3DText* OtherLinesTitle;
-    OpenUtility::C3DText* AllLinesTitle;
+    OpenUtility::CQuad* Separator;
+    OpenUtility::CTextureMultiQuad* LineLogo;
+
+    OpenUtility::C3DText* LinesTitle;
+    OpenUtility::C3DText* LinesDirection;
     
     OpenUtility::CMat4x4<float> MVPmatrix;
+    OpenUtility::CMat4x4<float> ScrollMatrix;
     OpenUtility::CMat4x4<float> ListMatrix;
 };
 

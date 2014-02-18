@@ -8,7 +8,7 @@ binDir = bin
 
 debug = 1
 
-RPIadress = 10.0.0.1
+RPIadress = 172.19.34.64
 RPIuser = pi
 RPIdir = /home/borne/borneMax
 CXX = C:/cygwin64/opt/cross/x-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++

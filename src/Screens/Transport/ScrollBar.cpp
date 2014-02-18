@@ -12,15 +12,13 @@ CScrollBar::CScrollBar(IRenderingObjectComm *obj, IScrollable* scrollableContent
     
     this->CurrentScroll = 0.0;
     this->ScrollHeight = 1.0;
+    this->ScrollValue = 0.0;
     
     this->MustRender = true;
 }
 
 void CScrollBar::Init()
 {
-    this->ScrollHeight = this->ScrollableContent->GetBoxHeight() / this->ScrollableContent->GetContentHeight();
-    this->MustRender = true;
-    
     this->Width = 0.023 * this->ScrollableContent->GetScreen()->GetScreenWidth();
     this->Height = -this->Width;
     
@@ -54,7 +52,21 @@ bool CScrollBar::PreRender()
     bool mustRender = this->MustRender;
     this->MustRender = false;
     
-    this->ScrollHeight = this->ScrollableContent->GetBoxHeight() / this->ScrollableContent->GetContentHeight();    
+    if (this->ScrollValue != 0) {
+        this->CurrentScroll += this->ScrollValue;
+        
+        if (this->CurrentScroll > 1)
+            this->CurrentScroll = 1;
+        else if (this->CurrentScroll < 0)
+            this->CurrentScroll = 0;   
+        
+        this->MustRender = true;
+    }    
+    
+    this->ScrollHeight = this->ScrollableContent->GetBoxHeight() / this->ScrollableContent->GetContentHeight();
+    if (this->ScrollHeight > 1)
+        this->ScrollHeight = 1;
+    
     float barOffset = (this->TotalBarHeight - this->TotalBarHeight * this->ScrollHeight) * this->CurrentScroll + this->Height*5/4;
     
     this->BarMatrix = OpenUtility::CMat4x4<float>(this->MVPmatrix);  
@@ -76,4 +88,14 @@ void CScrollBar::ScrollTo(float scroll)
 {
     this->CurrentScroll = scroll;
     this->MustRender = true;
+}
+
+void CScrollBar::Scroll(float value)
+{
+    this->ScrollValue = value;
+}
+
+void CScrollBar::StopScroll()
+{
+    this->ScrollValue = 0;
 }

@@ -5,9 +5,10 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "Transport/Structures.h"
 #include "Screen.h"
+#include "Transport/Structures.h"
 #include "Transport/LinesList.h"
+#include "../Utils/TransportFetcher/TransportFetcher.h"
 
 class CScreenTransport;
 class CLinesList;
@@ -44,6 +45,10 @@ public:
 	bool PreRender();
 	void Render();
     
+    void OnKeyDown(unsigned int id,int keyCode);
+	void OnKeyUp(unsigned int id,int keyCode);
+	void OnMouseMove(unsigned int id,double x,double y);
+    
     inline int GetScreenPixelWidth() {return 1920;} // TODO : Remplacer par le contexte OpenGL
     inline int GetScreenPixelHeight() {return 1080;} // TODO : Remplacer par le contexte OpenGL
     inline int GetTaskbarHeight() {return 108;} // TODO : Remplacer par la vraie valeur
@@ -53,6 +58,10 @@ public:
     inline OpenUtility::CMat4x4<float> GetMVPMatrix() {return this->MVPMatrix;}
     inline STransportStatus* GetStatus() {return &(this->Status);}
     inline OpenUtility::CFontLoader* GetFont(EFontTransport font) {return this->Fonts[font];}
+    inline CTransportFetcher* GetFetcher() {return this->Fetcher;}
+    inline std::vector<CLine>* GetLines() {return &(this->Lines);}
+    
+    OpenUtility::CTexture* GetTexture(std::string path);
     
     // Définition des couleurs
     static const OpenUtility::RGBAd WHITE; 
@@ -74,6 +83,9 @@ private:
     // Polices
     OpenUtility::CFontLoader* Fonts[3];
     
+    // Textures
+    std::map<std::string, OpenUtility::CTexture*> Textures;
+    
     // Fond et bandeau    
     OpenUtility::CQuad* Background;
     OpenUtility::CQuad* Header;
@@ -83,7 +95,7 @@ private:
     OpenUtility::CMat4x4<float> MVPmatrixTitle;
     
     // Logo TAN
-    OpenUtility::CTextureQuad* Logo;
+    OpenUtility::CTextureMultiQuad* Logo;
     OpenUtility::CMat4x4<float> MVPmatrixLogo;    
     
     // Liste des lignes
@@ -94,13 +106,13 @@ private:
     STransportStatus Status;      
     
     // Lien vers le serveur
-//    TransportFetcher Fetcher;
+    CTransportFetcher* Fetcher;
     
     // Liens vers les données
     std::string LogoPath;
 	std::string MapButtonPath;
     
-//    std::map<std::string, CLine> Lines;
+    std::vector<CLine> Lines;
 	std::vector<std::string> NearLines;	
 };
 

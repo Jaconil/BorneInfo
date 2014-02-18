@@ -2,6 +2,10 @@
 #ifndef _TransportStructures_h
 	#define _TransportStructures_h
 
+#include "../../Utils/TransportFetcher/Schedule.h"
+#include "../../Utils/TransportFetcher/Traffic.h"
+#include "../../Utils/TransportFetcher/Line.h"
+
 enum EScreenTransport
 {
     ST_HOME = 0,
@@ -25,9 +29,9 @@ struct STransportStatus
     EScreenTransport CurrentScreen;
     std::string CurrentLine;
     std::string CurrentStop;
-//	EDirection CurrentDirection;
-//	CSchedule CurrentSchedule;
-//	std::map<Traffic> CurrentTraffic;
+	EDirection CurrentDirection;
+	CSchedule* CurrentSchedule;
+	std::vector<CTraffic> CurrentTraffic;
 
     STransportStatus()
     {
@@ -35,6 +39,7 @@ struct STransportStatus
         CurrentScreen = ST_HOME;
         CurrentLine = "";
         CurrentStop = "";
+        CurrentSchedule = NULL;
     }
 };    
 

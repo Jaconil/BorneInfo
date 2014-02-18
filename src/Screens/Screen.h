@@ -19,6 +19,9 @@ public:
 	IScreen& operator=(const IScreen &obj);
 	inline const OpenUtility::CStream& GetName() const {return(Name);}
 	inline const OpenUtility::ITextureQuad* GetLogo() const {return(Image);}
+	virtual void OnKeyDown(unsigned int id,int keyCode)=0;
+	virtual void OnKeyUp(unsigned int id,int keyCode)=0;
+	virtual void OnMouseMove(unsigned int id,double x,double y)=0;
 
 protected:
 	OpenUtility::CStream Name;

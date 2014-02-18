@@ -8,6 +8,7 @@
 #include "../ScreenTransport.h"
 
 class CScreenTransport;
+class CScrollBar;
 
 class IScrollable
 {
@@ -17,6 +18,11 @@ public:
     virtual float GetContentHeight() = 0;
     virtual OpenUtility::CMat4x4<float> GetMVPMatrix() = 0;
     virtual CScreenTransport* GetScreen() = 0;
+    
+    inline CScrollBar* GetScrollBar() {return this->ScrollBar;}
+    
+protected:
+    CScrollBar* ScrollBar;
 };
 
 class CScrollBar : public IRenderingObject
@@ -27,8 +33,8 @@ public:
     CScrollBar& operator=(const CScrollBar &obj) {IRenderingObject::operator=(obj); return(*this);};
     ~CScrollBar() {};
     
-    void ScrollUp();
-    void ScrllDown();
+    void Scroll(float value);
+    void StopScroll();
     void ScrollTo(float scroll);
     
     void Init();
@@ -48,6 +54,7 @@ private:
     
     float ScrollHeight; // 1 = pas de scroll, sinon ]0, 1[
     float CurrentScroll; // 0 = en haut, 1 = en bas
+    float ScrollValue; // Vitesse de scroll courante
     
     float TotalBarHeight;
     

@@ -95,8 +95,8 @@ std::vector<CLine> CTransportFetcher::FetchLines()
 				connected.insert(std::pair<std::string, std::vector<std::string> >(connectedLine, connectedStops));
 			}
 
-			std::string map = "";			
-
+			std::string map = "";
+            
 			CLine line( id,
 						name,
 						direction1,
