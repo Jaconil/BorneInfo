@@ -113,8 +113,6 @@ void CLinesList::Update(bool screenChanged)
             this->ContentHeight = (0.09 + this->CommonScreen->GetLines()->size() * 0.11 - 0.11 / 2) * this->CommonScreen->GetScreenHeight(); // Liste
             //this->ContentHeight += 0.04; // Espacement entre listes
         }
-        
-        this->ScrollBar->ScrollTo(0.5);
     }  
     
     // MAJ du scroll
